@@ -1,0 +1,88 @@
+plugins {
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+    id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
+}
+
+// 配置文件目录
+def configDir = file("src/config").toPath()
+// 读取配置文件
+def prop = new Properties()
+configDir.resolve("app.properties").toFile().withReader{
+    prop.load(it)
+}
+
+android {
+    compileSdk 32
+
+    defaultConfig {
+        applicationId prop.packageName
+        minSdk 21
+        targetSdk 32
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        // 给AndroidManifest.xml添加占位符，然后使用${}引用
+        manifestPlaceholders = [ADMOB_APPLICATION_ID: prop.admobId]
+        // 生成一个资源id（type，id，value）
+        resValue("string", "facebook_app_id", prop.facebookId)
+        resValue("string", "fb_login_protocol_scheme", "fb${prop.facebookId}")
+        resValue("string", "facebook_client_token", prop.facebookToken)
+        // 在BuildConfig.java中生成常量
+        buildConfigField("String", "ADJUST_TOKEN", "\"${prop.adjustToken}\"")
+    }
+
+    signingConfigs {
+        release {
+            storeFile configDir.resolve(prop.storeFile).toFile()
+            storePassword prop.storePassword
+            keyAlias prop.keyAlias
+            keyPassword prop.keyPassword
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.release
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+    buildFeatures {
+        viewBinding true
+    }
+
+    flavorDimensions "config"
+    productFlavors {
+        config {
+            dimension "config"
+        }
+    }
+}
+
+dependencies {
+
+    implementation "androidx.core:core-ktx:1.9.0"
+    implementation "androidx.appcompat:appcompat:1.5.1"
+    implementation "com.google.android.material:material:1.6.1"
+    implementation "com.google.android.gms:play-services-ads:21.2.0"
+    testImplementation "junit:junit:4.13.2"
+    androidTestImplementation "androidx.test.ext:junit:1.1.3"
+    androidTestImplementation "androidx.test.espresso:espresso-core:3.4.0"
+
+    // facebook
+    implementation("com.facebook.android:facebook-android-sdk:latest.release")
+    // firebase
+    implementation(platform("com.google.firebase:firebase-bom:30.3.1"))
+    implementation("com.google.firebase:firebase-crashlytics-ktx")
+    implementation("com.google.firebase:firebase-analytics-ktx")
+}
