@@ -6,10 +6,9 @@ plugins {
 }
 
 // 配置文件目录
-def configDir = file("src/config").toPath()
 // 读取配置文件
 def prop = new Properties()
-configDir.resolve("app.properties").toFile().withReader{
+file("app.properties").withReader{
     prop.load(it)
 }
 
@@ -36,7 +35,7 @@ android {
 
     signingConfigs {
         release {
-            storeFile configDir.resolve(prop.storeFile).toFile()
+            storeFile file(prop.storeFile)
             storePassword prop.storePassword
             keyAlias prop.keyAlias
             keyPassword prop.keyPassword
@@ -59,13 +58,6 @@ android {
     }
     buildFeatures {
         viewBinding true
-    }
-
-    flavorDimensions "config"
-    productFlavors {
-        config {
-            dimension "config"
-        }
     }
 }
 

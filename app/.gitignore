@@ -1,2 +1,4 @@
 /build
-# src/config
+#./app.properties
+#./app.keystore
+#./google-services.json
