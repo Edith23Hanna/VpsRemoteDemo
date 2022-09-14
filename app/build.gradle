@@ -5,7 +5,6 @@ plugins {
     id("com.google.firebase.crashlytics")
 }
 
-// 配置文件目录
 // 读取配置文件
 def prop = new Properties()
 file("app.properties").withReader{
@@ -63,7 +62,7 @@ android {
 
 dependencies {
 
-    implementation "androidx.core:core-ktx:1.9.0"
+    implementation "androidx.core:core-ktx:1.7.0"
     implementation "androidx.appcompat:appcompat:1.5.1"
     implementation "com.google.android.material:material:1.6.1"
     implementation "com.google.android.gms:play-services-ads:21.2.0"
